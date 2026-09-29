@@ -21,13 +21,15 @@
 
 use crate::private::capability::ClientHook;
 
-#[non_exhaustive]
+// On platforms without file descriptors these types must exist (so the
+// FD-passing API has the same shape everywhere) but must be impossible to
+// construct. A private `Infallible` field achieves that; it also lets
+// `match self.0 {}` prove every method unreachable.
 #[derive(Debug, Clone, Copy)]
-pub enum BorrowedFd<'_> {}
+pub struct BorrowedFd<'a>(core::convert::Infallible, core::marker::PhantomData<&'a ()>);
 
-#[non_exhaustive]
 #[derive(Debug)]
-pub enum OwnedFd {}
+pub struct OwnedFd(core::convert::Infallible);
 
 pub trait AsFd {
     fn as_fd(&self) -> BorrowedFd<'_>;
@@ -35,13 +37,13 @@ pub trait AsFd {
 
 impl AsFd for BorrowedFd<'_> {
     fn as_fd(&self) -> BorrowedFd<'_> {
-        match self {}
+        match self.0 {}
     }
 }
 
 impl AsFd for OwnedFd {
     fn as_fd(&self) -> BorrowedFd<'_> {
-        match self {}
+        match self.0 {}
     }
 }
 
