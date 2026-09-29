@@ -50,8 +50,10 @@ on this branch. Add a row here for every commit you add.
   branch, and rewriting history orphans them.
 - **Don't bump crate versions.** They stay `capnp` 0.26.2, `capnp-rpc` 0.26.1,
   `capnp-futures` 0.26.1 and `capnpc` 0.26.0. Consumers write `"0.26"`
-  requirements; a bump could make the patch stop matching, and Cargo would
-  silently use crates.io instead.
+  requirements. A minor bump (0.27) stops the patch matching them at all, and
+  a patch-level bump only disguises which upstream release we're based on.
+  A version lower than crates.io's is fine: Cargo prefers a matching patch
+  when it resolves, as long as the lockfile is re-resolved (see below).
 - **Take upstream fixes with `git cherry-pick -x <sha>`.** If you resolve a
   conflict, add a bracketed `[zipline: …]` note to the commit message that says
   what you changed and why. Bring the upstream regression test along, and
@@ -106,7 +108,17 @@ expected. Don't add new ones:
   Linux, received FDs get close-on-exec atomically through `CMSG_CLOEXEC`.
 
 After pushing, bump the `rev` in `zl-zpr-core`'s `[patch.crates-io]`, all four
-lines, in a PR that runs core's netns tier.
+lines, in a PR that runs core's netns tier. In that PR:
+
+```sh
+cargo update -p capnp -p capnp-futures -p capnp-rpc -p capnpc
+```
+
+An existing lockfile keeps whatever it already has. If crates.io `capnp-rpc`
+0.26.3 is locked, it stays, and Cargo only warns `patch … was not used in the
+crate graph`, which rustc's `-D warnings` doesn't catch. Check two things:
+- every `capnp*` entry in `Cargo.lock` has a `git+https://github.com/mkolehmainen/capnproto-rust.git` source;
+- there is no `[[patch.unused]]` section.
 
 ## When to retire the fork
 
