@@ -34,7 +34,11 @@ optional = true
 [dependencies.rustix]
 version = "1.1.4"
 default-features = false
-features = ["std", "net"]
+# "time" is not used directly. rustix 1.1.5's linux_raw/net/sockopt.rs refers to
+# crate::timespec, which only exists when a time-related feature is enabled, so
+# with just ["std", "net"] rustix fails to build (E0433 x6). Drop "time" once a
+# rustix release fixes its own feature gating.
+features = ["std", "net", "time"]
 optional = true
 
 [dependencies.tokio]
