@@ -19,17 +19,23 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-use std::os::fd::{AsRawFd, RawFd};
 pub use std::os::fd::{AsFd, BorrowedFd, OwnedFd};
+#[cfg(feature = "alloc")]
+use std::os::fd::{AsRawFd, RawFd};
 
+#[cfg(feature = "alloc")]
 use crate::private::capability::ClientHook;
 
+// `FdHooks` holds capability hooks, which only exist with `alloc`
+// (see `private::capability`).
+#[cfg(feature = "alloc")]
 #[derive(Default)]
 pub struct FdHooks {
     hooks: Vec<Box<dyn ClientHook>>,
     fds: Vec<RawFd>,
 }
 
+#[cfg(feature = "alloc")]
 impl FdHooks {
     pub fn new() -> Self {
         Self::default()

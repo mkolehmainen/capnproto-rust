@@ -19,7 +19,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+#[cfg(feature = "alloc")]
 use crate::private::capability::ClientHook;
+#[cfg(feature = "alloc")]
+use alloc::boxed::Box;
 
 // On platforms without file descriptors these types must exist (so the
 // FD-passing API has the same shape everywhere) but must be impossible to
@@ -47,10 +50,14 @@ impl AsFd for OwnedFd {
     }
 }
 
+// `FdHooks` holds capability hooks, which only exist with `alloc`
+// (see `private::capability`).
+#[cfg(feature = "alloc")]
 #[derive(Default)]
 #[non_exhaustive]
 pub struct FdHooks {}
 
+#[cfg(feature = "alloc")]
 impl FdHooks {
     pub fn new() -> Self {
         Self::default()
