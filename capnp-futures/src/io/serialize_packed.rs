@@ -787,11 +787,16 @@ pub mod test {
             // ends after four bytes. This used to be treated as a clean end-of-file.
             let packed = [0xff, 1, 2, 3, 4, 5, 6, 7, 8, 2, 10, 11, 12, 13];
             let mut packed_read = PackedRead::new(&packed[..]);
-            let mut bytes: Vec<u8> = Vec::new();
-            let error = packed_read
-                .read_to_end(&mut bytes)
-                .await
-                .expect_err("expected error");
+            // `AsyncFdReadExt` has no `read_to_end`, so read until the stream
+            // either errors (expected) or reports a clean end-of-file (the bug).
+            let mut buf = [0u8; 64];
+            let error = loop {
+                match packed_read.read(&mut buf).await {
+                    Ok(0) => panic!("expected error, got clean end-of-file"),
+                    Ok(_) => continue,
+                    Err(e) => break e,
+                }
+            };
             assert_eq!(error.kind(), std::io::ErrorKind::UnexpectedEof);
         }));
     }
