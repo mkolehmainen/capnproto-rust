@@ -20,6 +20,10 @@ futures-channel = { version = "0.3.0", default-features = false, features = ["st
 futures-io = { version = "0.3.0", default-features = false, features = ["std"], optional = true }
 futures-util = { version = "0.3.0", default-features = false, features = ["std"] }
 
+[dev-dependencies]
+# The unit tests in src/rpc.rs are upstream's, and upstream depends on `futures`.
+futures = { version = "0.3.0", default-features = false, features = ["std"] }
+
 [features]
 default = ["futures-io"]
 futures-io = ["dep:futures-io", "capnp-futures/futures-io"]
