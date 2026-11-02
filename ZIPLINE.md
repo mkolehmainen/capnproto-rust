@@ -40,9 +40,15 @@ Base: `capnp-v0.26.2` + emilazy's 13 FD-passing commits, ending at `cb619b2e`
 | `24019c0b` | upstream `081b742d` | `get_data_field` bounds-check overflow (capnp 0.27.2). |
 | `b293800e` | upstream `1ed0d0e5` | Peer-triggered panic re-sending a twice-imported capability (capnp-rpc 0.26.2). The conflict with the FD work was resolved by hand. |
 | `c9a2764d` | upstream `f7269c6e` | Regression test for `24019c0b`. |
+| `50107f09` | upstream `180a0711` | Ready RPC tasks no longer run after their owner was cancelled (capnp-rpc 0.27.1). Adds `futures` as a capnp-rpc dev-dependency, which upstream's unit tests need. |
+| `926e975b` | upstream `132fd239` | `disconnect()` marks the connection disconnected before releasing state, so a re-entrant disconnect can't hit `unreachable!()` (capnp-rpc 0.27.2). The conflict was resolved by hand: upstream #677's `disconnect_promise` isn't on this branch. |
+| `ab173bb8` | upstream `2e4c5029` | `contains_interval` overflow on 32-bit targets (capnp 0.27.3). |
+| `5310c8a0` | upstream `349da711` | `is_canonical` advanced its read head past the segment end, which is UB (capnp 0.27.3). |
+| `98551724` | upstream `0d18340c` | `check_offset` panic on 32-bit targets (capnp 0.27.3). |
+| `cb89687a` | upstream `add1c014` | A disconnect during `write_descriptors()` hung the request and leaked exports (capnp-rpc 0.27.3). The conflict with the FD work was resolved by hand. |
 
-As of 2026-09-29, every security-relevant upstream fix up to capnp 0.27.2 is
-on this branch. Add a row here for every commit you add.
+As of 2026-11-02, every security-relevant upstream fix up to capnp 0.27.3 and
+capnp-rpc 0.27.3 is on this branch. Add a row here for every commit you add.
 
 ## Rules
 
